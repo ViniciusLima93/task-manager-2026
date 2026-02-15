@@ -1,15 +1,28 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Req, Delete , Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Req,
+  Delete,
+  Put,
+  ParseIntPipe,
+} from '@nestjs/common';
 import type Request from 'express';
-import { CreateTasksDto } from './create-tasks.dto';
+import { CreateTasksDto } from './dto/create-tasks.dto';
+import { TaskService } from './task-service.service';
 
 @Controller('tasks')
 export class TasksController {
-
+  serviceTask: TaskService;
 
   @Get()
   @HttpCode(200)
-  findAll(@Req() request: Request): string {
-    return 'This is a list of all tasks';
+  findAll(@Req() request: Request) {
+    return this.serviceTask.findAll();
   }
 
   // @Get()
@@ -19,29 +32,29 @@ export class TasksController {
 
   @Get(':id')
   @HttpCode(200)
-  findOne(@Param('id') id:string) {
-    return `This return for id ${id}`
+  findOne(@Param('id') id: number) {
+    return this.serviceTask.findOne(id);
   }
-
 
   @Post()
   @HttpCode(201)
   async create(@Body() CreateTasksDto: CreateTasksDto) {
-    return 'This action adds new tasks'
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    return await this.serviceTask.create(CreateTasksDto);
   }
 
   @Put(':id')
   @HttpCode(200)
-  update(@Param('id') id:string, @Body() updateTaskDto: CreateTasksDto) {
-    return `This is a action that will update for tasks with id : ${id}`
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTaskDto: CreateTasksDto,
+  ) {
+    return this.serviceTask.update(id, updateTaskDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    return ` this will delete the task with id :#${id}`;
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.serviceTask.remove(id);
   }
-
-
-
 }
