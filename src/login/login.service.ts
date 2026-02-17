@@ -5,33 +5,28 @@ import bcrypt from 'bcrypt';
 
 @Injectable()
 export class LoginService {
+  constructor(private prisma: PrismaService) {}
 
-    constructor (private prisma: PrismaService) {}
+  async execute({ email, password }: LoginUserDTO) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
 
-    async execute ({email, password}: LoginUserDTO) {
+    if (!user) throw new BadRequestException('User does not exists');
 
-        const user = await this.prisma.user.findFirst({
-            where: {
-                email: email
-            }
-        });
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
-        if (!user) throw new BadRequestException('User does not exists');
+    if (!isPasswordValid) throw new BadRequestException('Credentials invalids');
 
-        const isPasswordValid = await bcrypt.compare(password,user.password)
-
-        if (!isPasswordValid) throw new BadRequestException('Credentials invalids')
-
-            return {
-                error: false,
-                message: "Sucessfull login",
-                user: {
-                    user: user.name,
-                    email: user.email,
-                }
-            }
-
-
-
-        }
+    return {
+      error: false,
+      message: 'Sucessfull login',
+      user: {
+        user: user.name,
+        email: user.email,
+      },
+    };
+  }
 }
