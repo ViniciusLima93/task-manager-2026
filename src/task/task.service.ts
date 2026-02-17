@@ -14,19 +14,15 @@ export class TaskService {
       const taskByUser = await this.prisma.task.findMany({
         where: {
           userId: userId,
-        }
+        },
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (taskByUser.length === 0) {
-        console.log("not found tasks for user",userId);
+        console.log('not found tasks for user', userId);
         throw new BadRequestException('Id does not exists');
-        
-      } 
-      
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      }
+
       return taskByUser;
-      
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         console.log(error.code);
@@ -46,8 +42,8 @@ export class TaskService {
 
       return {
         statusCode: 201,
-        // eslint-disable-next-line prettier/prettier
-        message: "Task Created successfully",
+
+        message: 'Task Created successfully',
 
         data: createTask,
       };

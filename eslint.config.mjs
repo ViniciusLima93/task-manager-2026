@@ -27,9 +27,17 @@ export default tseslint.config(
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
+      // Stops complaining about missing return types on every function
+      '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
       "prettier/prettier": ["error", { endOfLine: "auto" }],
+        // Stops complaining about missing return types on public methods
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      
+      // Allows empty interfaces or constructors (common in NestJS)
+      '@typescript-eslint/no-empty-interface': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
     },
   },
 );
