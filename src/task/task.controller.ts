@@ -5,22 +5,27 @@ import {
   Param,
   Post,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import type Request from 'express';
 import { CreateTasksDto } from './dto/create-tasks.dto';
 import { TaskService } from './task.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private serviceTask: TaskService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() createTasksDto: CreateTasksDto) {
     return await this.serviceTask.create(createTasksDto);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Get(':userId')
   findAllTask(@Param('userId', ParseIntPipe) userId: number) {
+    console.log(process.env.ACCESS_TOKEN_SECRET);
     return this.serviceTask.findAll(userId);
   }
 }

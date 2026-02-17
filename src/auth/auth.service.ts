@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
@@ -11,10 +12,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RegisterDTO } from './dto/auth.dto';
 import bcrypt from 'bcrypt';
 import { PrismaClientKnownRequestError } from 'generated/prisma/internal/prismaNamespace';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async register(dto: RegisterDTO) {
     try {
@@ -29,12 +34,14 @@ export class AuthService {
           password: hashedPassword,
         },
       });
+      const payload = { username: user.name, sub: user.id };
 
       const { password, ...result } = user;
       return {
         statusCode: 201,
         message: 'User Created successfully',
         data: result,
+        acess_token: this.jwtService.sign(payload),
       };
     } catch (error) {
       console.log(error);
